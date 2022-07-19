@@ -2,11 +2,13 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include "wave.h"
+#include "example.h"
 
 FILE *ptr;
 char *filename;
-struct HEADER header;
+struct WAVE_HEADER header;
+struct WAVE_FORMAT_CHUNK fmt;
+struct WAVE_DATA_CHUNK first_data_chunk; // temp
 unsigned char buffer4[4];
 unsigned char buffer2[2];
 
@@ -21,6 +23,7 @@ int main(){
 
 int readWaveHeader(FILE *ptr){
     int read = 0;
+    
     // RIFF
     read = fread(header.riff, sizeof(header.riff), 1, ptr);
     printf("(1-4): %s \n", header.riff);
@@ -41,101 +44,92 @@ int readWaveHeader(FILE *ptr){
     printf("(9-12) Wave marker: %s\n", header.wave);
     
     // fmt 
-    read = fread(header.fmt_chunk_marker, sizeof(header.fmt_chunk_marker), 1, ptr);
-    printf("(13-16) Fmt marker: %s\n", header.fmt_chunk_marker);
+    read = fread(fmt.chunkType, sizeof(fmt.chunkType), 1, ptr);
+    printf("(13-16) Fmt marker: %s\n", fmt.chunkType);
     
     read = fread(buffer4, sizeof(buffer4), 1, ptr);
     printf("%u %u %u %u\n", buffer4[0], buffer4[1], buffer4[2], buffer4[3]);
 
     // convert little endian to big endian 4 byte integer
-    header.length_of_fmt = buffer4[0] |
+    fmt.chunkSize = buffer4[0] |
                             (buffer4[1] << 8) |
                             (buffer4[2] << 16) |
                             (buffer4[3] << 24);
-    printf("(17-20) Length of Fmt header: %u \n", header.length_of_fmt);
+    printf("(17-20) Length of Fmt header: %u \n", fmt.chunkSize);
     
     read = fread(buffer2, sizeof(buffer2), 1, ptr); printf("%u %u \n", buffer2[0], buffer2[1]);
-    header.format_type = buffer2[0] | (buffer2[1] << 8);
+    fmt.audioFormat = buffer2[0] | (buffer2[1] << 8);
 
     char format_name[10] = "";
-    if (header.format_type == 1)
+    if (fmt.audioFormat == 1)
         strcpy(format_name,"PCM");
-    else if (header.format_type == 6)
+    else if (fmt.audioFormat == 6)
         strcpy(format_name, "A-law");
-    else if (header.format_type == 7)
+    else if (fmt.audioFormat == 7)
         strcpy(format_name, "Mu-law");
-    printf("(21-22) Format type: %u %s \n", header.format_type, format_name);
+    printf("(21-22) Format type: %u %s \n", fmt.audioFormat, format_name);
     
     // fmt channels
     read = fread(buffer2, sizeof(buffer2), 1, ptr);
     printf("%u %u \n", buffer2[0], buffer2[1]);
-    header.channels = buffer2[0] | (buffer2[1] << 8);
-    printf("(23-24) Channels: %u \n", header.channels);
+    fmt.numChannels = buffer2[0] | (buffer2[1] << 8);
+    printf("(23-24) Channels: %u \n", fmt.numChannels);
 
     // fmt sample rate
     read = fread(buffer4, sizeof(buffer4), 1, ptr);
     printf("%u %u %u %u\n", buffer4[0], buffer4[1], buffer4[2], buffer4[3]);
-    header.sample_rate = buffer4[0] |
+    fmt.sampleRate = buffer4[0] |
                         (buffer4[1] << 8) |
                         (buffer4[2] << 16) |
                         (buffer4[3] << 24);
-    printf("(25-28) Sample rate: %u\n", header.sample_rate);
+    printf("(25-28) Sample rate: %u\n", fmt.sampleRate);
 
     // fmt byterate
     read = fread(buffer4, sizeof(buffer4), 1, ptr);
     printf("%u %u %u %u\n", buffer4[0], buffer4[1], buffer4[2], buffer4[3]);
-    header.byterate  = buffer4[0] |
+    fmt.byteRate  = buffer4[0] |
                         (buffer4[1] << 8) |
                         (buffer4[2] << 16) |
                         (buffer4[3] << 24);
-    printf("(29-32) Byte Rate: %u , Bit Rate:%u\n", header.byterate, header.byterate*8);
+    printf("(29-32) Byte Rate: %u , Bit Rate:%u\n", fmt.byteRate, fmt.byteRate*8);
 
     // block alignment
     read = fread(buffer2, sizeof(buffer2), 1, ptr);
     printf("%u %u \n", buffer2[0], buffer2[1]);
-    header.block_align = buffer2[0] |
+    fmt.blockAlign = buffer2[0] |
                     (buffer2[1] << 8);
-    printf("(33-34) Block Alignment: %u \n", header.block_align);
+    printf("(33-34) Block Alignment: %u \n", fmt.blockAlign);
 
     // bits per sample
     read = fread(buffer2, sizeof(buffer2), 1, ptr);
     printf("%u %u \n", buffer2[0], buffer2[1]);
-    header.bits_per_sample = buffer2[0] |
+    fmt.bitsPerSample = buffer2[0] |
                     (buffer2[1] << 8);
-    printf("(35-36) Bits per sample: %u \n", header.bits_per_sample);
+    printf("(35-36) Bits per sample: %u \n", fmt.bitsPerSample);
 
     // chunk header marker
-    read = fread(header.data_chunk_header, sizeof(header.data_chunk_header), 1, ptr);
-    printf("(37-40) Data Marker: %s \n", header.data_chunk_header);
+    read = fread(first_data_chunk.chunkId, sizeof(first_data_chunk.chunkId), 1, ptr);
+    printf("(37-40) Data Marker: %s \n", first_data_chunk.chunkId);
 
     // chunk size
     read = fread(buffer4, sizeof(buffer4), 1, ptr);
     printf("%u %u %u %u\n", buffer4[0], buffer4[1], buffer4[2], buffer4[3]);
-    header.data_size = buffer4[0] |
+    first_data_chunk.chunkSize = buffer4[0] |
                     (buffer4[1] << 8) |
                     (buffer4[2] << 16) |
                     (buffer4[3] << 24 );
-    printf("(41-44) Size of data chunk: %u \n", header.data_size);
+    printf("(41-44) Size of data chunk: %u \n", first_data_chunk.chunkSize);
 
     // calculate no.of samples
-    long num_samples = (8 * header.data_size) / (header.channels * header.bits_per_sample);
+    long num_samples = (8 * first_data_chunk.chunkSize) / (fmt.numChannels * fmt.bitsPerSample);
     printf("Number of samples:%lu \n", num_samples);
 
-    long size_of_each_sample = (header.channels * header.bits_per_sample) / 8;
+    long size_of_each_sample = (fmt.numChannels * fmt.bitsPerSample) / 8;
     printf("Size of each sample:%ld bytes\n", size_of_each_sample);
 
     // calculate duration of file
-    float duration_in_seconds = (float) header.overall_size / header.byterate;
+    float duration_in_seconds = (float) header.fileSize / fmt.byteRate;
     printf("Approx.Duration in seconds=%f\n", duration_in_seconds);
-}
-
-void readWaveFileSamples(FILE *ptr){
-    if(header.format_type == 1){
-        printf("Number of channels %i", header.channels);
-    }else{
-        printf("Can only read PCM.");
-        exit(1);
-    }
 }
 
 int signum ( int sample ) {
