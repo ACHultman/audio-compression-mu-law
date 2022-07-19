@@ -8,9 +8,13 @@ FILE *ptr;
 char *filename;
 struct WAVE_HEADER header;
 struct WAVE_FORMAT_CHUNK fmt;
-struct WAVE_DATA_CHUNK first_data_chunk; // temp
+struct WAVE_DATA_CHUNK data_chunk; // temp
+struct WAVE_DATA_CHUNK_COMPRESSED compressed_data; // temp
 unsigned char buffer4[4];
 unsigned char buffer2[2];
+
+long num_samples;
+long size_of_each_sample;
 
 int main(){
     ptr = fopen("test.wav", "rb");
@@ -108,38 +112,45 @@ int readWaveHeader(FILE *ptr){
     printf("(35-36) Bits per sample: %u \n", fmt.bitsPerSample);
 
     // chunk header marker
-    read = fread(first_data_chunk.chunkId, sizeof(first_data_chunk.chunkId), 1, ptr);
-    printf("(37-40) Data Marker: %s \n", first_data_chunk.chunkId);
+    read = fread(data_chunk.chunkId, sizeof(data_chunk.chunkId), 1, ptr);
+    printf("(37-40) Data Marker: %s \n", data_chunk.chunkId);
 
     // chunk size
     read = fread(buffer4, sizeof(buffer4), 1, ptr);
     printf("%u %u %u %u\n", buffer4[0], buffer4[1], buffer4[2], buffer4[3]);
-    first_data_chunk.chunkSize = buffer4[0] |
+    data_chunk.chunkSize = buffer4[0] |
                     (buffer4[1] << 8) |
                     (buffer4[2] << 16) |
                     (buffer4[3] << 24 );
-    printf("(41-44) Size of data chunk: %u \n", first_data_chunk.chunkSize);
+    printf("(41-44) Size of data chunk: %u \n", data_chunk.chunkSize);
 
     // calculate no.of samples
-    long num_samples = (8 * first_data_chunk.chunkSize) / (fmt.numChannels * fmt.bitsPerSample);
+    num_samples = (8 * data_chunk.chunkSize) / (fmt.numChannels * fmt.bitsPerSample);
     printf("Number of samples:%lu \n", num_samples);
 
-    long size_of_each_sample = (fmt.numChannels * fmt.bitsPerSample) / 8;
+    size_of_each_sample = (fmt.numChannels * fmt.bitsPerSample) / 8;
     printf("Size of each sample:%ld bytes\n", size_of_each_sample);
 
     // calculate duration of file
     float duration_in_seconds = (float) header.fileSize / fmt.byteRate;
     printf("Approx.Duration in seconds=%f\n", duration_in_seconds);
+
+    data_chunk.sampleData = calloc(num_samples, size_of_each_sample);
+
+    for (int i = 0; i < num_samples; i++) {
+        fread(buffer4, size_of_each_sample, 1, fp);
+        data_chunk.sampleData[i] = (buffer[0]) | (buffer[1] << 8);
+    }
 }
 
-int signum ( int sample ) {
+short signum ( short sample ) {
     if( sample < 0)
         return( 0); /* sign is ’0’ for negative samples */
     else
         return( 1); /* sign is ’1’ for positive samples */
 }
 
-int magnitude ( int sample ) {
+unsigned short magnitude ( short sample ) {
     if( sample < 0) {
         sample = - sample ;
     }
@@ -147,57 +158,124 @@ int magnitude ( int sample ) {
 }
 
 
-char codeword_compression ( unsigned int sample_magnitude, int sign ) {
+char codeword_compression ( unsigned short sample_magnitude, short sign ) {
     int chord, step;
     int codeword_tmp;
 
     if( sample_magnitude & (1 << 12)) {
         chord = 0 x7 ;
-        step = ( sample_magnitude >> 8) & 0 xF ;
+        step = ( sample_magnitude >> 8) & 0xF ;
         codeword_tmp = ( sign << 7) & ( chord << 4) & step ;
         return ( (char) codeword_tmp );
     }
     if( sample_magnitude & (1 << 11)) {
         chord = 0 x6 ;
-        step = ( sample_magnitude >> 7) & 0 xF ;
+        step = ( sample_magnitude >> 7) & 0xF ;
         codeword_tmp = ( sign << 7) & ( chord << 4) & step ;
         return ( (char) codeword_tmp );
     }
     if( sample_magnitude & (1 << 10)) {
         chord = 0 x5 ;
-        step = ( sample_magnitude >> 6) & 0 xF ;
+        step = ( sample_magnitude >> 6) & 0xF ;
         codeword_tmp = ( sign << 7) & ( chord << 4) & step ;
         return ( (char) codeword_tmp );
     }
 
     if( sample_magnitude & (1 << 9)) {
         chord = 0 x4 ;
-        step = ( sample_magnitude >> 5) & 0 xF ;
+        step = ( sample_magnitude >> 5) & 0xF ;
         codeword_tmp = ( sign << 7) & ( chord << 4) & step ;
         return ( (char) codeword_tmp );
     }
     if( sample_magnitude & (1 << 8)) {
         chord = 0 x3 ;
-        step = ( sample_magnitude >> 4) & 0 xF ;
+        step = ( sample_magnitude >> 4) & 0xF ;
         codeword_tmp = ( sign << 7) & ( chord << 4) & step ;
         return ( (char) codeword_tmp );
     }
     if( sample_magnitude & (1 << 7)) {
         chord = 0 x2 ;
-        step = ( sample_magnitude >> 3) & 0 xF ;
+        step = ( sample_magnitude >> 3) & 0xF ;
         codeword_tmp = ( sign << 7) & ( chord << 4) & step ;
         return ( (char) codeword_tmp );
     }
     if( sample_magnitude & (1 << 6)) {
         chord = 0 x1 ;
-        step = ( sample_magnitude >> 2) & 0 xF ;
+        step = ( sample_magnitude >> 2) & 0xF ;
         codeword_tmp = ( sign << 7) & ( chord << 4) & step ;
         return ( (char) codeword_tmp );
     }
     if( sample_magnitude & (1 << 5)) {
         chord = 0 x0 ;
-        step = ( sample_magnitude >> 1) & 0 xF ;
+        step = ( sample_magnitude >> 1) & 0xF ;
         codeword_tmp = ( sign << 7) & ( chord << 4) & step ;
         return ( (char) codeword_tmp );
+    }
+}
+
+unsigned short magnitude_decode(char codeword) {
+    int chord = (codeword & 0x70) >> 4;
+    int step = codeword & 0x0F;
+    int msb = 1, lsb = 1;
+    int magnitude;
+    
+    if (chord == 0x7) {
+        magnitude = (lsb << 7) | (step << 8) | (msb << 12);
+    }
+    else if (chord == 0x6) {
+        magnitude = (lsb << 6) | (step << 7) | (msb << 11);
+    }
+    else if (chord == 0x5) {
+        magnitude = (lsb << 5) | (step << 6) | (msb << 10);
+    }
+    else if (chord == 0x4) {
+        magnitude = (lsb << 4) | (step << 5) | (msb << 9);
+    }
+    else if (chord == 0x3) {
+        magnitude = (lsb << 3) | (step << 4) | (msb << 8);
+    }
+    else if (chord == 0x2) {
+        magnitude = (lsb << 2) | (step << 3) | (msb << 7);
+    }
+    else if (chord == 0x1) {
+        magnitude = (lsb << 1) | (step << 2) | (msb << 6);
+    }
+    else if (chord == 0x0) {
+        magnitude = lsb | (step << 1) | (msb << 5);
+    }
+
+    return (unsigned short) magnitude;
+}
+
+void compressData () {
+    // TODO add error checking
+    compressed_data.sampleData = calloc(num_samples, size_of_each_sample);
+
+    for (int i = 0; i < num_samples; i++) {
+        // get sampple
+        short sample = (data_chunk.sampleData[i] >> 2);
+        // get sign
+        short sign = signum(sample);
+        // get magnitude
+        unsigned short magninute = magnitude(sample) + 33;
+        // gen codeword
+        char codeword = codeword_compression(magninute, sign);
+        // flip codeword
+        codeword = ~codeword;
+        // save
+        compressed_data.sampleData[i] = codeword;
+    }
+}
+
+void decompressData () {
+    // TODO add error checking
+
+    __uint8_t codeword;
+    for (int i = 0; i < numSamples; i++) {
+        codeword = ~(compressed_data.sampleData[i]);
+        short sign = (codeword & 0x80) >> 7;
+        unsigned short magnitude = (magnitude_decode(codeword) - 33);
+        short sample = (short) (sign ? magnitude : -magnitude);
+        wave.waveDataChunk.sampleData[i] = sample << 2;
     }
 }
