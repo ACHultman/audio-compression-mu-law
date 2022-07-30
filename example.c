@@ -3,6 +3,7 @@
 //#include <unistd.h>
 #include <stdlib.h>
 #include "example.h"
+//#include "arm_neon.h"
 
 FILE *ptr;
 char *filename;
@@ -144,6 +145,25 @@ int readWaveHeader(FILE *ptr){
     printf("Approx.Duration in seconds=%f\n", duration_in_seconds);
 
     wave.waveDataChunk.sampleData = calloc(num_samples, size_of_each_sample);
+
+    // print all header and format chunk data
+    printf("\n\n");
+    printf("wave.waveHeader.riff: %s\n", wave.waveHeader.riff);
+    printf("wave.waveHeader.fileSize: %u\n", wave.waveHeader.fileSize);
+    printf("wave.waveHeader.waveId: %s\n", wave.waveHeader.wave);
+
+    printf("wave.waveFormatChunk.chunkId: %s\n", wave.waveFormatChunk.chunkType);
+    printf("wave.waveFormatChunk.chunkSize: %u\n", wave.waveFormatChunk.chunkSize);
+    printf("wave.waveFormatChunk.audioFormat: %u\n", wave.waveFormatChunk.audioFormat);
+    printf("wave.waveFormatChunk.numChannels: %u\n", wave.waveFormatChunk.numChannels);
+    printf("wave.waveFormatChunk.sampleRate: %u\n", wave.waveFormatChunk.sampleRate);
+    printf("wave.waveFormatChunk.byteRate: %u\n", wave.waveFormatChunk.byteRate);
+    printf("wave.waveFormatChunk.blockAlign: %u\n", wave.waveFormatChunk.blockAlign);
+    printf("wave.waveFormatChunk.bitsPerSample: %u\n", wave.waveFormatChunk.bitsPerSample);
+
+    printf("\nwave.waveDataChunk.chunkId: %s\n", wave.waveDataChunk.chunkId);
+    printf("wave.waveDataChunk.chunkSize: %u\n", wave.waveDataChunk.chunkSize);
+    printf("wave.waveDataChunk.sampleData: %p\n\n", wave.waveDataChunk.sampleData);
     
     int i;
     for (i = 0; i < num_samples; i++) {
@@ -167,12 +187,13 @@ void convertShortToLittleEndian(__uint16_t chunk) {
 
 void writeWaveFile(char *filename) {
     FILE *o_ptr;
-    o_ptr = fopen(filename, "w");
+    o_ptr = fopen(filename, "wb");
     if (o_ptr == NULL) {
         printf("Error opening file!\n");
         exit(1);
     }
 
+    printf("\nWriting wave file...\n");
     fwrite(wave.waveHeader.riff, sizeof(wave.waveHeader.riff), 1, o_ptr);
     
     convertIntToLittleEndian(wave.waveHeader.fileSize); 
@@ -180,42 +201,64 @@ void writeWaveFile(char *filename) {
 
     fwrite(wave.waveHeader.wave, sizeof(wave.waveHeader.wave), 1, o_ptr);
 
+    printf("Writing format chunk\n");
     fwrite(wave.waveFormatChunk.chunkType, sizeof(wave.waveFormatChunk.chunkType), 1, o_ptr);
 
+    printf("Writing format chunk size\n");
     convertIntToLittleEndian(wave.waveFormatChunk.chunkSize); 
+    printf("%u %u %u %u\n", buffer4[0], buffer4[1], buffer4[2], buffer4[3]);
     fwrite(buffer4, sizeof(buffer4), 1, o_ptr);
 
-    convertShortToLittleEndian(wave.waveFormatChunk.audioFormat); 
-    fwrite(buffer2, sizeof(__uint16_t), 1, o_ptr);
+    printf("Writing format chunk audio format\n");
+    convertShortToLittleEndian(wave.waveFormatChunk.audioFormat);
+    printf("%u %u\n", buffer2[0], buffer2[1]);
+    fwrite(buffer2, sizeof(buffer2), 1, o_ptr);
 
-    convertShortToLittleEndian(wave.waveFormatChunk.numChannels); 
-    fwrite(buffer2, sizeof(__uint16_t), 1, o_ptr);
+    printf("Writing format chunk num channels\n");
+    convertShortToLittleEndian(wave.waveFormatChunk.numChannels);
+    printf("%u %u\n", buffer2[0], buffer2[1]); 
+    fwrite(buffer2, sizeof(buffer2), 1, o_ptr);
     
-    convertIntToLittleEndian(wave.waveFormatChunk.sampleRate); 
+    printf("Writing format chunk sample rate\n");
+    convertIntToLittleEndian(wave.waveFormatChunk.sampleRate);
+    printf("%u %u %u %u\n", buffer4[0], buffer4[1], buffer4[2], buffer4[3]); 
     fwrite(buffer4, sizeof(buffer4), 1, o_ptr);
 
-    convertIntToLittleEndian(wave.waveFormatChunk.byteRate); 
+    printf("Writing format chunk byte rate\n");
+    convertIntToLittleEndian(wave.waveFormatChunk.byteRate);
+    printf("%u %u %u %u\n", buffer4[0], buffer4[1], buffer4[2], buffer4[3]); 
     fwrite(buffer4, sizeof(buffer4), 1, o_ptr);
 
-    convertShortToLittleEndian(wave.waveFormatChunk.blockAlign); 
-    fwrite(buffer2, sizeof(__uint16_t), 1, o_ptr);
+    printf("Writing format chunk block align\n");
+    convertShortToLittleEndian(wave.waveFormatChunk.blockAlign);
+    printf("%u %u\n", buffer2[0], buffer2[1]); 
+    fwrite(buffer2, sizeof(buffer2), 1, o_ptr);
 
-    convertShortToLittleEndian(wave.waveFormatChunk.bitsPerSample); 
-    fwrite(buffer2, sizeof(__uint16_t), 1, o_ptr);
+    printf("Writing format chunk bits per sample\n");
+    convertShortToLittleEndian(wave.waveFormatChunk.bitsPerSample);
+    printf("%u %u\n", buffer2[0], buffer2[1]); 
+    fwrite(buffer2, sizeof(buffer2), 1, o_ptr);
 
+    printf("Writing data chunk\n");
+
+    printf("%s\n", wave.waveDataChunk.chunkId);
     fwrite(wave.waveDataChunk.chunkId, sizeof(wave.waveDataChunk.chunkId), 1, o_ptr);
 
+    printf("Writing data chunk size\n");
     convertIntToLittleEndian(wave.waveDataChunk.chunkSize); 
+    printf("%u %u %u %u\n", buffer4[0], buffer4[1], buffer4[2], buffer4[3]);
     fwrite(buffer4, sizeof(buffer4), 1, o_ptr);
 
-    printf("Writing data...\n");
+    printf("\nWriting data...\n");
     printf("Num Samples: %lu\n", num_samples);
 
     int i;
-    for (i = 0; i < num_samples; i++) {
+    for(i = 0; i < num_samples; i++)
+    {
         printf("%d\n", wave.waveDataChunk.sampleData[i]);
         convertShortToLittleEndian(wave.waveDataChunk.sampleData[i]);
-        fwrite(buffer2, sizeof(__uint32_t), 1, o_ptr);
+        printf("Writing %hu\n", buffer2);
+        fwrite(buffer2, size_of_each_sample, 1, o_ptr);
     }
 
 
@@ -362,12 +405,12 @@ void decompressData () {
     __uint8_t codeword;
     int i;
     for (i = 0; i < num_samples; i++) {
-        printf("%hu\n", compressed_data.sampleData[i]);
+        //printf("%hu\n", compressed_data.sampleData[i]);
         codeword = ~(compressed_data.sampleData[i]);
         short sign = (codeword & 0x80) >> 7;
-        printf("%d\n", sign);
+        //printf("%d\n", sign);
         unsigned short magnitude = (magnitude_decode(codeword) - 33);
-        printf("%d\n", magnitude);
+        //printf("%d\n", magnitude);
         short sample = (short) (sign ? magnitude : -magnitude);
         printf("%d\n", sample << 2);
         wave.waveDataChunk.sampleData[i] = sample << 2;
