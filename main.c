@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
 
 	read_wav();
 	fclose(ifp);
-	print_header();
+	// print_header();
 
 	// Compression
 	start = clock();
@@ -38,7 +38,8 @@ int main(int argc, char* argv[]) {
 	start = clock();
 	decompress();
 	end = clock();
-	printf("Decompressed %u samples in %us\n\n", num_samples, (uint32_t)((end - start) * CLOCKS_PER_SEC));
+	// printf("Decompressed %u samples in %us\n\n", num_samples, (uint32_t)((end - start) * CLOCKS_PER_SEC));
+	printf("%us\n", (double)((end - start) / CLOCKS_PER_SEC));
 	
 	// Write output wave file
 
