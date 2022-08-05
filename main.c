@@ -15,6 +15,8 @@ int main(int argc, char* argv[]) {
 
 	printf("\nUsing file: %s\n\n", argv[1]);
 
+	// Read input wave file
+
 	// Open file
 	ifp = fopen(argv[1], "rb");
 	if (ifp == NULL) {
@@ -30,14 +32,16 @@ int main(int argc, char* argv[]) {
 	start = clock();
 	compress();
 	end = clock();
-	printf("Compressed %u samples in %us\n", num_samples, (uint32_t)((end - start) / CLOCKS_PER_SEC));
+	// printf("Compressed %u samples in %us\n", num_samples, (uint32_t)((end - start) / CLOCKS_PER_SEC));
 
 	// Decompression
 	start = clock();
 	decompress();
 	end = clock();
-	printf("Decompressed %u samples in %us\n\n", num_samples, (uint32_t)((end - start) / CLOCKS_PER_SEC));
+	printf("Decompressed %u samples in %us\n\n", num_samples, (uint32_t)((end - start) * CLOCKS_PER_SEC));
 	
+	// Write output wave file
+
 	ofp = fopen(argv[2], "wb");
 	if (ofp == NULL) {
 		printf("Error creating output file\n");
