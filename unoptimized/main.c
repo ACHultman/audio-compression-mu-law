@@ -4,7 +4,9 @@
 #include <stdlib.h>
 #include "main.h"
 
-time_t start, end; // For timing
+// For timing
+clock_t start;
+clock_t end; 
 
 int main(int argc, char* argv[]) {
 	if (argc < 3) 
@@ -28,19 +30,23 @@ int main(int argc, char* argv[]) {
 
 	read_wav();
 	fclose(ifp);
-	// print_header();
+	print_header();
 
 	// Compression
 	start = clock();
+	printf("Starting compression, start_t = %ld\n", start);
 	compress();
 	end = clock();
-	printf("Compressed %u samples in %g\n", num_samples, difftime(end, start));
+	printf("Finished compression, end_t = %ld\n", end);
+	printf("Compressed %u samples in %ld\n", num_samples, end - start);
 
 	// Decompression
 	start = clock();
+	printf("Starting decompression, start_t = %ld\n", start);
 	decompress();
 	end = clock();
-	printf("%g\n", difftime(end, start));
+	printf("Finished decompression, end_t = %ld\n", end);
+	printf("Decompressed in %ld\n", end - start);
 	
 	// Write output wave file
 
