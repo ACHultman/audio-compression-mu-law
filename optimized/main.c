@@ -34,14 +34,14 @@ int main(int argc, char* argv[]) {
 	start = clock();
 	compress();
 	end = clock();
-	printf("Compressed %u samples in %us\n", num_samples, end - start);
+	printf("Compressed %u samples in %g\n", num_samples, difftime(end, start));
 
 	// Decompression
 	start = clock();
 	decompress();
 	end = clock();
 	// printf("Decompressed %u samples in %us\n\n", num_samples, (uint32_t)((end - start) * CLOCKS_PER_SEC));
-	printf("%us\n", (double)((end - start) / CLOCKS_PER_SEC));
+	printf("%g\n", difftime(end, start));
 	
 	// Write output wave file
 
