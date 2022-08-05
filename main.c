@@ -26,13 +26,13 @@ int main(int argc, char* argv[]) {
 
 	read_wav();
 	fclose(ifp);
-	print_header();
+	// print_header();
 
 	// Compression
 	start = clock();
 	compress();
 	end = clock();
-	// printf("Compressed %u samples in %us\n", num_samples, (uint32_t)((end - start) / CLOCKS_PER_SEC));
+	printf("Compressed %u samples in %us\n", num_samples, (uint32_t)((end - start) / CLOCKS_PER_SEC));
 
 	// Decompression
 	start = clock();
