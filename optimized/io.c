@@ -138,14 +138,17 @@ void read_wav() {
 	num_samples = wave.fmt.data_size / (bytes_per_sample * wave.fmt.num_channels);
 
 	wave.samples = calloc(num_samples, bytes_per_sample);
-	if (wave.samples == NULL) {
+	if (wave.samples == NULL) 
+	{
 		printf("Could not allocate memory for samples.\n");
 		exit(1);
 	}
 
 	// Read the samples - assume 16-bit little-endian
 	int i;
-	for (i = 0; i < num_samples; i++) {
+	for (i = 0; i < num_samples; i++) 
+	{
+	#pragma HLS unroll factor=10
 		fread(buffer_2, sizeof(buffer_2), 1, ifp);
 		wave.samples[i] = (int16_t)convert_short_to_big_endian(buffer_2);
 	}
@@ -206,7 +209,9 @@ void write_wav() {
 
 	// Write the samples - 16-bit little-endian
 	int i;
-	for (i = 0; i < num_samples; i++) {
+	for (i = 0; i < num_samples; i++) 
+	{
+	#pragma HLS unroll factor=10
 		convert_short_to_little_endian((uint16_t)wave.samples[i]);
 		fwrite(buffer_2, sizeof(buffer_2), 1, ofp);
 	}
