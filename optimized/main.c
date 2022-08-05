@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
 	start = clock();
 	compress();
 	end = clock();
-	printf("Compressed %u samples in %us\n", num_samples, (uint32_t)((end - start) / CLOCKS_PER_SEC));
+	printf("Compressed %u samples in %us\n", num_samples, end - start);
 
 	// Decompression
 	start = clock();
