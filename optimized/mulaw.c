@@ -115,28 +115,43 @@ uint16_t compressed_magnitude(uint8_t codeword) {
 	uint8_t chord = (codeword >> 4) & 0x7;
 	uint8_t step = codeword & 0xF;
 
-    // OPTIMIZATION: use switch statement instead of if-else statement
-	switch (chord) {
-		case 0x0:
-			return (1 << 5) | (step << 1) | 1;
-		case 0x1:
-			return (1 << 6) | (step << 2) | (1 << 1);
-		case 0x2:
-			return (1 << 7) | (step << 3) | (1 << 2);
-		case 0x3:
-			return (1 << 8) | (step << 4) | (1 << 3);
-		case 0x4:
-			return (1 << 9) | (step << 5) | (1 << 4);
-		case 0x5:
-			return (1 << 10) | (step << 6) | (1 << 5);
-		case 0x6:
-			return (1 << 11) | (step << 7) | (1 << 6);
-		case 0x7:
-			return (1 << 12) | (step << 8) | (1 << 7);
-		default:
-			printf("Invalid chord while decompressing.\n");
-			printf("Chord: %d\n", chord);
-			exit(1);
+	if (chord == 0x7) 
+	{
+		return (1 << 12) | (step << 8) | (1 << 7);
+	}
+	else if (chord == 0x6) 
+	{
+		return (1 << 11) | (step << 7) | (1 << 6);
+	}
+	else if (chord == 0x5) 
+	{
+		return (1 << 10) | (step << 6) | (1 << 5);
+	}
+	else if (chord == 0x4) 
+	{
+		return (1 << 9) | (step << 5) | (1 << 4);
+	}
+	else if (chord == 0x3) 
+	{
+		return (1 << 8) | (step << 4) | (1 << 3);
+	}
+	else if (chord == 0x2) 
+	{
+		return (1 << 7) | (step << 3) | (1 << 2);
+	}
+	else if (chord == 0x1) 
+	{
+		return (1 << 6) | (step << 2) | (1 << 1);
+	}
+	else if (chord == 0x0) 
+	{
+		return (1 << 5) | (step << 1) | 1;
+	}
+	else 
+	{
+		printf("Invalid chord while decompressing.\n");
+		printf("Chord: %d\n", chord);
+		exit(1);
 	}
 }
 
