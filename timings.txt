@@ -23,4 +23,8 @@ Compressed 375421 samples in 0.06s
 Decompressed in 0.06s
 --------------------
 
-
+optimized - no loop condition optimized
+----------
+Compressed 375421 samples in 0.07s
+Decompressed in 0.04s
+----------------------
