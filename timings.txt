@@ -1,12 +1,18 @@
 timings
 ========
 unoptimized
-Compressed 375421 samples in 0.2300000
-Decompressed in 0.1900000
+Compressed 375421 samples in 0.23s
+Decompressed in 0.19s
 --------------------
 
 optimized
 ----------
-Compressed 375421 samples in 0.0600000
-Decompressed in 0.0400000
+Compressed 375421 samples in 0.06s
+Decompressed in 0.04s
+--------------------
+
+optimized - no unrolling
+----------
+Compressed 375421 samples in 0.07s
+Decompressed in 0.04s
 --------------------
