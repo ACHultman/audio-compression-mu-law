@@ -30,19 +30,19 @@ int main(int argc, char* argv[]) {
 
 	read_wav();
 	fclose(ifp);
-	print_header();
+	// print_header();
 
 	// Compression
 	time_t start = clock();
 	compress();
 	time_t end = clock();
-	printf("Compressed %u samples in %.4f\n", num_samples, (double)(end - start) / CLOCKS_PER_SEC);
+	printf("Compressed %u samples in %.7fs\n", num_samples, (double)(end - start) / CLOCKS_PER_SEC);
 
 	// Decompression
 	start = clock();
 	decompress();
 	end = clock();
-	printf("Decompressed in %.4f\n", (double)(end - start) / CLOCKS_PER_SEC);
+	printf("Decompressed in %.7fs\n", (double)(end - start) / CLOCKS_PER_SEC);
 	
 	// Write output wave file
 	ofp = fopen(argv[2], "wb");
