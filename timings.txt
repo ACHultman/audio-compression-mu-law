@@ -16,3 +16,11 @@ optimized - no unrolling
 Compressed 375421 samples in 0.07s
 Decompressed in 0.04s
 --------------------
+
+optimized - no switch
+----------
+Compressed 375421 samples in 0.06s
+Decompressed in 0.06s
+--------------------
+
+
