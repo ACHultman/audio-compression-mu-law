@@ -30,7 +30,7 @@ void compress() {
 	// OPTIMZATION: loop exit condition and decrement
 	// OPTIMIZATION: loop unroll factor is set to 10
 	int i;
-	for (i = 0; i < num_samples; i++) 
+	for (i = num_samples; i != 0; i--) 
 	{
 	#pragma HLS unroll factor=10
 		sample = (wave.samples[i] >> 2); // right shift by 2 to get rid of last 2 bits (only 1 sign bit, 13 magnitude bits are used)
@@ -156,7 +156,7 @@ void decompress() {
 	// OPTIMIZATION: loop exit condition + decrement instead of increment
 	// OPTIMIZATION: use loop unrolling
 	int i;
-	for (i = 0; i < num_samples; i++) 
+	for (i = num_samples; i != 0; i--) 
 	{
 	#pragma HLS unroll factor=10
 		codeword = ~(compressed_wave.samples[i]); // OPTIMIZATION: collapse into single line
