@@ -32,7 +32,7 @@ void compress() {
 	int i;
 	for (i = num_samples; i != 0; i--) 
 	{
-	#pragma HLS unroll factor=10
+	// #pragma HLS unroll factor=10
 		sample = (wave.samples[i] >> 2); // right shift by 2 to get rid of last 2 bits (only 1 sign bit, 13 magnitude bits are used)
 		sign = sample & (1 << 15) ? 0 : 1; // OPTIMIZATION: replace helper function
 		mag =  (sample < 0 ? (uint16_t)(-sample) : (uint16_t)sample) + 33; // OPTIMIZATION: replace helper function
@@ -158,7 +158,7 @@ void decompress() {
 	int i;
 	for (i = num_samples; i != 0; i--) 
 	{
-	#pragma HLS unroll factor=10
+	// #pragma HLS unroll factor=10
 		codeword = ~(compressed_wave.samples[i]); // OPTIMIZATION: collapse into single line
 		sign = codeword & (1 << 7) ? 0 : 1; // OPTIMIZATION: replace helper function call with bitwise operation
 		mag = compressed_magnitude(codeword) - 33; // OPTIMIZATION: collapse into single line
