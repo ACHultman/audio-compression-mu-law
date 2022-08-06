@@ -33,20 +33,26 @@ int main(int argc, char* argv[]) {
 	print_header();
 
 	// Compression
-	start = clock();
-	printf("Starting compression, start_t = %ld\n", start);
+	time_t start = clock();
+	printf("Starting compression, start_t = %.7f\n", (double) start);
 	compress();
-	end = clock();
+	time_t end = clock();
 	printf("Finished compression, end_t = %ld\n", end);
 	printf("Compressed %u samples in %ld\n", num_samples, end - start);
+	printf("Compressed %u samples in %.7f\n", num_samples, (double)(end - start) / CLOCKS_PER_SEC);
 
 	// Decompression
 	start = clock();
 	printf("Starting decompression, start_t = %ld\n", start);
 	decompress();
 	end = clock();
+
 	printf("Finished decompression, end_t = %ld\n", end);
 	printf("Decompressed in %ld\n", end - start);
+	printf("Decompressed in %.7f\n", (double)(end - start) / CLOCKS_PER_SEC);
+	
+	// printf("Decompressed %u samples in %us\n\n", num_samples, (uint32_t)((end - start) * CLOCKS_PER_SEC));
+	printf("%.7f\n", (double)(end - start) / CLOCKS_PER_SEC);
 	
 	// Write output wave file
 
