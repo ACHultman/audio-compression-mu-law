@@ -5,8 +5,8 @@
 #include "main.h"
 
 // For timing
-clock_t start;
-clock_t end; 
+// clock_t start;
+// clock_t end; 
 
 int main(int argc, char* argv[]) {
 	if (argc < 3) 
@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
 		exit(1);
 	}
 
-	printf("\nUsing file: %s\n\n", argv[1]);
+	// printf("\nUsing file: %s\n\n", argv[1]);
 
 	// Read input wave file
 
@@ -33,16 +33,16 @@ int main(int argc, char* argv[]) {
 	// print_header();
 
 	// Compression
-	time_t start = clock();
+	// time_t start = clock();
 	compress();
-	time_t end = clock();
-	printf("Compressed %u samples in %.7fs\n", num_samples, (double)(end - start) / CLOCKS_PER_SEC);
+	// time_t end = clock();
+	// printf("Compressed %u samples in %.7fs\n", num_samples, (double)(end - start) / CLOCKS_PER_SEC);
 
 	// Decompression
-	start = clock();
+	// start = clock();
 	decompress();
-	end = clock();
-	printf("Decompressed in %.7fs\n", (double)(end - start) / CLOCKS_PER_SEC);
+	// end = clock();
+	// printf("Decompressed in %.7fs\n", (double)(end - start) / CLOCKS_PER_SEC);
 	
 	// Write output wave file
 	ofp = fopen(argv[2], "wb");

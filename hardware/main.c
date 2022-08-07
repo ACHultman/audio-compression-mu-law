@@ -14,8 +14,6 @@ int main(int argc, char* argv[]) {
 		exit(1);
 	}
 
-	printf("\nUsing file: %s\n\n", argv[1]);
-
 	// Read input wave file
 
 	// Open file
@@ -28,22 +26,11 @@ int main(int argc, char* argv[]) {
 
 	read_wav();
 	fclose(ifp);
-	// print_header();
 
-	// Compression
-	start = clock();
 	compress();
-	end = clock();
-	printf("Compressed %u samples in %us\n", num_samples, (uint32_t)((end - start) / CLOCKS_PER_SEC));
-
-	// Decompression
-	start = clock();
 	decompress();
-	end = clock();
-	printf("Decompressed %u samples in %us\n\n", num_samples, (uint32_t)((end - start) * CLOCKS_PER_SEC));
 	
 	// Write output wave file
-
 	ofp = fopen(argv[2], "wb");
 	if (ofp == NULL) 
 	{
