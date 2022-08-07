@@ -85,3 +85,21 @@ Average decompressed time:  0.006007429s
 
 Optimized compression speed-up:     3.0x
 Optimzied decompression speed-up:   3.5x
+
+
+Maximum Inline Optimization
+==========================
+Compressed 375421 samples in 0.0157340s
+Decompressed in 0.0093870s
+--------------------
+Compressed 375421 samples in 0.0095320s
+Decompressed in 0.0056980s
+--------------------
+Compressed 375421 samples in 0.0144260s
+Decompressed in 0.0057080s
+--------------------
+Compressed 375421 samples in 0.0202600s
+Decompressed in 0.0074420s
+--------------------
+Compressed 375421 samples in 0.0095160s
+Decompressed in 0.0057380s
