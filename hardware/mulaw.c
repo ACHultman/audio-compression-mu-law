@@ -24,8 +24,7 @@ void compress() {
 		// Rt = target register - only the ls 14 or 8 bits are relevant depending on mode
 		__asm__ (
 			"mulaw   %0, %1, %2" : "=r" (compressed_wave.samples[i]) : "r" (wave.samples[i]), "r" (0x1)
-			return ((uint8_t) compressed_wave.samples[i]);
-		)
+		);
 	}
 }
 
@@ -44,7 +43,6 @@ void decompress() {
 		// Rt = target register - only the ls 14 or 8 bits are relevant depending on mode
 		__asm__ (
 			"mulaw   %0, %1, %2" : "=r" (wave.samples[i]) : "r" (compressed_wave.samples[i]), "r" (0x0)
-			return ((uint16_t) wave.samples[i]);
-		)
+		);
 	}
 }
