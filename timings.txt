@@ -28,3 +28,60 @@ optimized - no loop condition optimized
 Compressed 375421 samples in 0.07s
 Decompressed in 0.04s
 ----------------------
+
+
+
+Unoptimized
+===========
+Compressed 375421 samples in 0.0241720s
+Decompressed in 0.0197560s
+--------------------
+Compressed 375421 samples in 0.0451650s
+Decompressed in 0.0195720s
+--------------------
+Compressed 375421 samples in 0.0375130s
+Decompressed in 0.0288550s
+--------------------
+Compressed 375421 samples in 0.0400680s
+Decompressed in 0.0326890s
+--------------------
+Compressed 375421 samples in 0.0401110s
+Decompressed in 0.0260260s
+--------------------
+Compressed 375421 samples in 0.0240810s
+Decompressed in 0.0196620s
+--------------------
+Compressed 375421 samples in 0.0241290s
+Decompressed in 0.0197170s
+====================
+Average compressed time: 0.033605571s
+Average decompressed time: 0.020945s
+
+Optimized
+========
+Compressed 375421 samples in 0.0104200s
+Decompressed in 0.0054600s
+--------------------
+Compressed 375421 samples in 0.0154600s
+Decompressed in 0.0055180s
+--------------------
+Compressed 375421 samples in 0.0091390s
+Decompressed in 0.0054890s
+--------------------
+Compressed 375421 samples in 0.0152760s
+Decompressed in 0.0091190s
+--------------------
+Compressed 375421 samples in 0.0092070s
+Decompressed in 0.0054620s
+--------------------
+Compressed 375421 samples in 0.0091930s
+Decompressed in 0.0054760s
+--------------------
+Compressed 375421 samples in 0.0091800s
+Decompressed in 0.0055280s
+====================
+Average compressed time:    0.011125s
+Average decompressed time:  0.006007429s
+
+Optimized compression speed-up:     3.0x
+Optimzied decompression speed-up:   3.5x
