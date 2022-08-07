@@ -54,11 +54,9 @@ compress:
 	asr	r4, r4, #2
 	cmp	r4, #0
 	mvn	r1, r4
-	uxth	r4, r4
 	rsblt	r4, r4, #33
 	addge	r4, r4, #33
 	lsr	r1, r1, #31
-	uxth	r4, r4
 	tst	r4, #4096
 	bne	.L21
 	tst	r4, #2048
@@ -143,7 +141,6 @@ find_codeword:
 .L27:
 	orr	r0, r3, r0, lsl #7
 	orr	r0, r0, r1
-	uxtb	r0, r0
 	bx	lr
 .L26:
 	tst	r1, #2048
@@ -153,7 +150,6 @@ find_codeword:
 	and	r1, r1, #15
 	orr	r0, r3, r0, lsl #7
 	orr	r0, r0, r1
-	uxtb	r0, r0
 	bx	lr
 .L28:
 	tst	r1, #1024
