@@ -121,3 +121,11 @@ Decompressed in 0.0050130s
 --------------------
 Compressed 375421 samples in 0.0080300s
 Decompressed in 0.0051190s
+=========================
+Average compress time:  0.0078662s
+Average decompress time: 0.0050486
+
+Unoptimized vs. Optimized (w/ replace globals)
+================================
+Compression speed-up:   4.3x
+Decompression speed-up: 4.1x
