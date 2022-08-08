@@ -15,45 +15,46 @@ uint8_t find_codeword(register uint8_t sign, register uint16_t mag) {
 
     // TODO possible optimizations:
     // - use lookup table
-    // - return codeword directly instead of wasting time on the if-else statement
+    // - return codeword directly
+	// 	 instead of wasting time on the if-else statement
 
 	// Chord corresponds to the location of the msb of 1 in the magnitude
-	if (mag & (1 << 12)) 
+	if (mag & (1 << 12))
 	{
 		chord = 0x7;
 		step = (mag >> 8) & 0xF;
 	}
-	else if (mag & (1 << 11)) 
+	else if (mag & (1 << 11))
 	{
 		chord = 0x6;
 		step = (mag >> 7) & 0xF;
 	}
-	else if (mag & (1 << 10)) 
+	else if (mag & (1 << 10))
 	{
 		chord = 0x5;
 		step = (mag >> 6) & 0xF;
 	}
-	else if (mag & (1 << 9)) 
+	else if (mag & (1 << 9))
 	{
 		chord = 0x4;
 		step = (mag >> 5) & 0xF;
 	}
-	else if (mag & (1 << 8)) 
+	else if (mag & (1 << 8))
 	{
 		chord = 0x3;
 		step = (mag >> 4) & 0xF;
 	}
-	else if (mag & (1 << 7)) 
+	else if (mag & (1 << 7))
 	{
 		chord = 0x2;
 		step = (mag >> 3) & 0xF;
 	}
-	else if (mag & (1 << 6)) 
+	else if (mag & (1 << 6))
 	{
 		chord = 0x1;
 		step = (mag >> 2) & 0xF;
 	}
-	else if (mag & (1 << 5)) 
+	else if (mag & (1 << 5))
 	{
 		chord = 0x0;
 		step = (mag >> 1) & 0xF;

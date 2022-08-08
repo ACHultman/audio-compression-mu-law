@@ -32,7 +32,10 @@ void convert_short_to_little_endian(unsigned char* buffer_2, uint16_t be_num) {
  * @return uint32_t 
  */
 uint32_t convert_int_to_big_endian(unsigned char* le_num) {
-	uint32_t be_num = le_num[0] | (le_num[1] << 8) | (le_num[2] << 16) | (le_num[3] << 24);
+	uint32_t be_num = le_num[0] 
+					  | (le_num[1] << 8) 
+					  | (le_num[2] << 16) 
+					  | (le_num[3] << 24);
 	return be_num;
 }
 

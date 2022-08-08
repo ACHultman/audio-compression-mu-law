@@ -78,9 +78,12 @@ int main(int argc, char* argv[]) {
 	fread(buffer_4, sizeof(buffer_4), 1, ifp);
 	wave.fmt.data_size = convert_int_to_big_endian(buffer_4);
 
-	bytes_per_sample = (wave.fmt.bits_per_sample * wave.fmt.num_channels) / 8;
+	bytes_per_sample = (wave.fmt.bits_per_sample 
+						* wave.fmt.num_channels) 
+						/ 8;
 
-	num_samples = wave.fmt.data_size / (bytes_per_sample * wave.fmt.num_channels);
+	num_samples = wave.fmt.data_size 
+					/(bytes_per_sample * wave.fmt.num_channels);
 
 	wave.samples = calloc(num_samples, bytes_per_sample);
 	if (wave.samples == NULL) 
@@ -115,14 +118,22 @@ int main(int argc, char* argv[]) {
 	int j;
 	for (j = num_samples; j != 0; j--) 
 	{
-		pcm_sample = (wave.samples[j] >> 2); // right shift by 2 to get rid of last 2 bits (only 1 sign bit, 13 magnitude bits are used)
+		// right shift by 2 to get rid of last 2 bits (only 1 sign bit, 13 magnitude bits are used)
+		pcm_sample = (wave.samples[j] >> 2);
 		pcm_sign = pcm_sample & (1 << 15) ? 0 : 1; // OPTIMIZATION: replace helper function
-		pcm_mag =  (pcm_sample < 0 ? (uint16_t)(-pcm_sample) : (uint16_t)pcm_sample) + 33; // OPTIMIZATION: replace helper function
-		compressed_wave.samples[j] = ~(find_codeword(pcm_sign, pcm_mag)); // OPTIMIZATION: replace onto single line - compiler should do this for us
+		pcm_mag =  (pcm_sample < 0
+		? (uint16_t)(-pcm_sample) 
+		: (uint16_t)pcm_sample) 
+		+ 33; // WARNING: Assuming max value of 8159
+		compressed_wave.samples[j] = ~(find_codeword(pcm_sign, pcm_mag));
 	}
 
 	time_t end = clock();
-	printf("Compressed %u samples in %.7fs\n", num_samples, (double)(end - start) / CLOCKS_PER_SEC);
+	printf(
+			"Compressed %u samples in %.7fs\n",
+	 		num_samples,
+			(double)(end - start) / CLOCKS_PER_SEC
+			);
 
 	// Decompression
 	start = clock();
