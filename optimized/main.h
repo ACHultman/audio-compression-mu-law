@@ -31,27 +31,11 @@ typedef struct COMPRESSED_WAVE {
 } COMPRESSED_WAVE;
 
 // mulaw.c
-uint8_t signum(int16_t sample);
-uint16_t magnitude(int16_t sample);
 uint8_t find_codeword(uint8_t sign, uint16_t mag);
-uint8_t compressed_signum(uint8_t codeword);
 uint16_t compressed_magnitude(uint8_t codeword);
-void compress();
-void decompress();
 
 // io.c
-void print_header();
 uint16_t convert_short_to_big_endian(unsigned char* little_endian);
-void convert_short_to_little_endian(uint16_t big_endian);
+void convert_short_to_little_endian(unsigned char* buffer_2, uint16_t big_endian);
 uint32_t convert_int_to_big_endian(unsigned char* little_endian);
-void convert_int_to_little_endian(uint32_t big_endian);
-void read_wav();
-void write_wav();
-
-// globals
-extern FILE* ifp; // input file pointer
-extern FILE* ofp; // output file pointer
-extern uint32_t num_samples; // number of samples in the file
-extern uint16_t bytes_per_sample; // number of bytes per sample
-extern WAVE wave; // Wave structure - read from file
-extern COMPRESSED_WAVE compressed_wave; // Compressed wave structure - MuLaw compressed
+void convert_int_to_little_endian(unsigned char* buffer_4, uint32_t big_endian);
