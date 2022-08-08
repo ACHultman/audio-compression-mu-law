@@ -129,3 +129,8 @@ Unoptimized vs. Optimized (w/ replace globals)
 ================================
 Compression speed-up:   4.3x
 Decompression speed-up: 4.1x
+
+O3 Flag Average Times
+=====================
+Compressed in 9.9 ms
+Decompressed in 6.3 ms
