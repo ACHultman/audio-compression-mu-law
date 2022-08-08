@@ -10,7 +10,7 @@
  * @param mag - magnitude of sample
  * @return uint8_t - MuLaw codeword for sample
  */
-uint8_t find_codeword(register uint8_t sign, register uint16_t mag) {
+uint8_t find_codeword(uint8_t sign, uint16_t mag) {
 	uint8_t chord, step;
 
     // TODO possible optimizations:
@@ -75,7 +75,7 @@ uint8_t find_codeword(register uint8_t sign, register uint16_t mag) {
  * @param codeword - compressed sample to find magnitude of
  * @return uint16_t - magnitude of compressed sample
  */
-uint16_t compressed_magnitude(register uint8_t codeword) {
+uint16_t compressed_magnitude(uint8_t codeword) {
 	uint8_t chord = (codeword >> 4) & 0x7;
 	uint8_t step = codeword & 0xF;
 

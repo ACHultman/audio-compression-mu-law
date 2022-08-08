@@ -5,7 +5,7 @@
 #include "main.h"
 
 int main(int argc, char* argv[]) {
-	if (argc < 3)
+	if (3 > argc)
 	{
 		printf("Please enter the input and output file names.\n");
 		printf("Usage: %s <input file> <output file>\n", argv[0]);
@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
 
 	// Open file
 	ifp = fopen(argv[1], "rb");
-	if (ifp == NULL) 
+	if (NULL == ifp)
 	{
 		printf("Error opening file\n");
 		exit(1);
@@ -86,7 +86,7 @@ int main(int argc, char* argv[]) {
 					/(bytes_per_sample * wave.fmt.num_channels);
 
 	wave.samples = calloc(num_samples, bytes_per_sample);
-	if (wave.samples == NULL) 
+	if (NULL == wave.samples) 
 	{
 		printf("Could not allocate memory for samples.\n");
 		exit(1);
@@ -104,7 +104,7 @@ int main(int argc, char* argv[]) {
 	// Compression
 	time_t start = clock();
 	compressed_wave.samples = calloc(num_samples, sizeof(uint8_t));
-	if (compressed_wave.samples == NULL) 
+	if (NULL == compressed_wave.samples) 
 	{
 		printf("Could not allocate memory for compressed samples.\n");
 		exit(1);
@@ -159,7 +159,7 @@ int main(int argc, char* argv[]) {
 	// Write output wave file
 
 	ofp = fopen(argv[2], "wb");
-	if (ofp == NULL) 
+	if (NULL == ofp) 
 	{
 		printf("Error creating output file\n");
 		exit(1);
