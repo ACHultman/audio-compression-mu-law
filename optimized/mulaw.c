@@ -3,43 +3,6 @@
 #include <stdint.h>
 #include "main.h"
 
-// TODO possible optimization: use a single array for both wave and compressed_wave?
-// TODO possible optimization: use local variables for wave and compressed_wave instead of global variables?
-
-/**
- * @brief Compresses the wave data using MuLaw encoding
- */
-void compress() {
-	compressed_wave.samples = calloc(num_samples, sizeof(uint8_t));
-	if (compressed_wave.samples == NULL) 
-	{
-		printf("Could not allocate memory for compressed samples.\n");
-		exit(1);
-	}
-
-	int16_t sample; // 16-bit signed integer
-	uint16_t mag; // 16-bit unsigned integer - magnitude of sample
-	uint8_t sign; // 8-bit unsigned integer - sign of sample
-	uint8_t codeword; // 8-bit unsigned integer - MuLaw codeword for sample
-
-	// TODO: possible optimizations:
-    // - use loop unrolling
-    // - use bitwise operations instead of logical operations
-
-
-	// OPTIMZATION: loop exit condition and decrement
-	// OPTIMIZATION: loop unroll factor is set to 10
-	int i;
-	for (i = num_samples; i != 0; i--) 
-	{
-	#pragma HLS unroll factor=10
-		sample = (wave.samples[i] >> 2); // right shift by 2 to get rid of last 2 bits (only 1 sign bit, 13 magnitude bits are used)
-		sign = sample & (1 << 15) ? 0 : 1; // OPTIMIZATION: replace helper function
-		mag =  (sample < 0 ? (uint16_t)(-sample) : (uint16_t)sample) + 33; // OPTIMIZATION: replace helper function
-		compressed_wave.samples[i] = ~(find_codeword(sign, mag)); // OPTIMIZATION: replace onto single line - compiler should do this for us
-	}
-}
-
 /**
  * @brief Use MuLaw encoding to find the codeword for a sample
  * 
@@ -47,7 +10,7 @@ void compress() {
  * @param mag - magnitude of sample
  * @return uint8_t - MuLaw codeword for sample
  */
-uint8_t find_codeword(uint8_t sign, uint16_t mag) {
+uint8_t find_codeword(register uint8_t sign, register uint16_t mag) {
 	uint8_t chord, step;
 
     // TODO possible optimizations:
@@ -111,7 +74,7 @@ uint8_t find_codeword(uint8_t sign, uint16_t mag) {
  * @param codeword - compressed sample to find magnitude of
  * @return uint16_t - magnitude of compressed sample
  */
-uint16_t compressed_magnitude(uint8_t codeword) {
+uint16_t compressed_magnitude(register uint8_t codeword) {
 	uint8_t chord = (codeword >> 4) & 0x7;
 	uint8_t step = codeword & 0xF;
 
@@ -137,31 +100,5 @@ uint16_t compressed_magnitude(uint8_t codeword) {
 			printf("Invalid chord while decompressing.\n");
 			printf("Chord: %d\n", chord);
 			exit(1);
-	}
-}
-
-/**
- * @brief Decompresses the wave data using MuLaw encoding
- */
-void decompress() {
-	int16_t sample; // 16-bit signed integer
-	uint16_t mag; // 16-bit unsigned integer - magnitude of sample
-	uint8_t sign; // 8-bit unsigned integer - sign of sample
-	uint8_t codeword; // 8-bit unsigned integer - MuLaw codeword for sample
-
-    // TODO possible optimizations:
-    // - use loop unrolling
-    // - use bitwise operations instead of logical operations
-
-	// OPTIMIZATION: loop exit condition + decrement instead of increment
-	// OPTIMIZATION: use loop unrolling
-	int i;
-	for (i = num_samples; i != 0; i--) 
-	{
-	#pragma HLS unroll factor=10
-		codeword = ~(compressed_wave.samples[i]); // OPTIMIZATION: collapse into single line
-		sign = codeword & (1 << 7) ? 0 : 1; // OPTIMIZATION: replace helper function call with bitwise operation
-		mag = compressed_magnitude(codeword) - 33; // OPTIMIZATION: collapse into single line
-		wave.samples[i] = ((int16_t)(sign ? -mag : mag) << 2); // shift sample left by 2 to make it 16-bit
 	}
 }
