@@ -14,27 +14,6 @@ unsigned char buffer_2[2]; // buffer for 2 bytes - used for reading and writing
 unsigned char buffer_4[4]; // buffer for 4 bytes - used for reading and writing
 
 /**
- * @brief Writes the compressed wave data to a file
- */
-void print_header() {
-	printf("(1-4): %s\n", wave.riff.riff);
-	printf("(5-8): Total Size: %u bytes, %ukb\n", wave.riff.chunk_size, wave.riff.chunk_size / 1024);
-	printf("(9-12): %s\n", wave.riff.format);
-	printf("(13-16): %s\n", wave.fmt.id);
-	printf("(17-20): Format Length: %u bytes\n", wave.fmt.size);
-	printf("(21-22): Format Type: %u\n", wave.fmt.audio_format);
-	printf("(23-24): Channels: %u\n", wave.fmt.num_channels);
-	printf("(25-28): Sample Rate: %u Hz\n", wave.fmt.sample_rate);
-	printf("(29-32): Byte Rate: %u bytes/s\n", wave.fmt.byte_rate);
-	printf("(33-34): Block Align: %u\n", wave.fmt.block_align);
-	printf("(35-36): Bits Per Sample: %u\n", wave.fmt.bits_per_sample);
-	printf("(37-40): %s\n", wave.fmt.data_id);
-	printf("(40-44): Data Length: %u bytes, %ukb\n\n", wave.fmt.data_size, wave.fmt.data_size / 1024);
-	printf("Number of Samples: %u\n", num_samples);
-	printf("Bytes per Sample: %u\n\n", bytes_per_sample);
-}
-
-/**
  * @brief Converts a 16-bit little-endian number to a big-endian number
  * 
  * @param le_num 

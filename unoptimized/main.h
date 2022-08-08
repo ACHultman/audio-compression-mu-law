@@ -40,7 +40,6 @@ void compress();
 void decompress();
 
 // io.c
-void print_header();
 uint16_t convert_short_to_big_endian(unsigned char* little_endian);
 void convert_short_to_little_endian(uint16_t big_endian);
 uint32_t convert_int_to_big_endian(unsigned char* little_endian);

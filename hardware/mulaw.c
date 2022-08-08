@@ -8,7 +8,7 @@
  */
 void compress() {
 	compressed_wave.samples = calloc(num_samples, sizeof(uint8_t));
-	if (compressed_wave.samples == NULL) 
+	if (NULL == compressed_wave.samples) 
 	{
 		printf("Could not allocate memory for compressed samples.\n");
 		exit(1);

@@ -7,7 +7,7 @@
 time_t start, end; // For timing
 
 int main(int argc, char* argv[]) {
-	if (argc < 3) 
+	if (3 > argc) 
 	{
 		printf("Please enter the input and output file names.\n");
 		printf("Usage: %s <input file> <output file>\n", argv[0]);
@@ -18,7 +18,7 @@ int main(int argc, char* argv[]) {
 
 	// Open file
 	ifp = fopen(argv[1], "rb");
-	if (ifp == NULL) 
+	if (NULL == ifp) 
 	{
 		printf("Error opening file\n");
 		exit(1);
@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
 	
 	// Write output wave file
 	ofp = fopen(argv[2], "wb");
-	if (ofp == NULL) 
+	if (NULL == ofp) 
 	{
 		printf("Error creating output file\n");
 		exit(1);
