@@ -14,3 +14,8 @@ This program was written for partial fulfillment of the requirements for SENG 44
 - Compile to ASM: `make <opt | unopt>-gen-asm`
 - Compile ASM: `make <opt | unopt>-asm`
 - Profile with gprof: `make <opt | unopt>-prof`
+
+## Files
+- `main.c` - contains main flow of the program
+- `mulaw.c` - contains mulaw logic regarding the codeword conversions
+- `io.c` - provides the input/output logic for the wave files
